@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KyivQuest — Історія Києва на місцевості</title>
+  <meta name="description" content="Інтерактивний застосунок для вивчення історії Києва через місцевість" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b3d91"/>
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+    defer
+  ></script>
+  <link rel="stylesheet" href="style.css" />
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar" role="banner">
+  <h1 aria-label="KyivQuest — Історія Києва">KyivQuest</h1>
+  <nav aria-label="Головна навігація">
+    <button id="btn-missions" class="tab-btn" aria-pressed="true">Місії</button>
+    <button id="btn-achievements" class="tab-btn">Досягнення</button>
+    <button id="btn-help" class="tab-btn">Довідка</button>
+  </nav>
+</header>
+
+<main class="layout" role="main">
+  <section id="map" class="map" aria-label="Карта Києва"></section>
+
+  <aside class="panel" aria-live="polite">
+    <div id="panel-missions" class="panel-view is-active">
+      <div class="panel-header">
+        <h2>Місії поруч</h2>
+        <div class="geo-status" id="geo-status" role="status">⏳ Очікуємо геолокацію…</div>
+      </div>
+      <ul id="mission-list" class="mission-list" aria-label="Список місій"></ul>
+      <div id="mission-detail" class="mission-detail" hidden>
+        <h3 id="mission-title"></h3>
+        <p id="mission-desc"></p>
+        <p class="meta"><strong>Район:</strong> <span id="mission-area"></span></p>
+        <p class="meta"><strong>Відстань:</strong> <span id="mission-distance">—</span></p>
+        <div class="actions">
+          <button id="btn-navigate" class="primary">Прокласти маршрут</button>
+          <button id="btn-start-quiz" class="secondary" disabled>Почати вікторину</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-achievements" class="panel-view" hidden>
+      <h2>Досягнення</h2>
+      <ul id="achievements-list" class="badges"></ul>
+      <div class="stats">
+        <p><strong>Пройдено місій:</strong> <span id="stat-missions">0</span> / <span id="stat-total">0</span></p>
+        <p><strong>Найкращий серійний результат:</strong> <span id="stat-streak">0</span> 🔥</p>
+      </div>
+      <button id="btn-reset" class="danger">Скинути прогрес</button>
+    </div>
+
+    <div id="panel-help" class="panel-view" hidden>
+      <h2>Як це працює?</h2>
+      <ol>
+        <li>Дозвольте доступ до геолокації.</li>
+        <li>Обирайте місію на карті або в списку.</li>
+        <li>Прийдіть у радіус <strong>120 м</strong> — відкриється вікторина.</li>
+        <li>Набирайте бали, відкривайте значки та рухайтесь далі!</li>
+      </ol>
+      <p class="small">Порада для вчителів: додавайте власні точки в <code>data.js</code> — це просто JSON.</p>
+    </div>
+  </aside>
+</main>
+
+<!-- Модальне вікно вікторини -->
+<div id="quiz-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="quiz-title" hidden>
+  <div class="modal-content">
+    <h3 id="quiz-title">Вікторина</h3>
+    <div id="quiz-question" class="quiz-question"></div>
+    <form id="quiz-form" class="quiz-options" aria-live="polite"></form>
+    <div class="quiz-footer">
+      <button id="quiz-next" class="primary" disabled>Далі</button>
+      <button id="quiz-exit" class="secondary">Вийти</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer" role="contentinfo">
+  <small>© 2025 KyivQuest. Створено для навчання. Працює офлайн (PWA).</small>
+</footer>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js');
+    });
+  }
+</script>
+</body>
+</html>
