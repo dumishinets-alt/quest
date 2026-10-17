@@ -13,6 +13,7 @@
  * (scripts/export-timeline.ts), тож музика завжди збігається з відео.
  */
 import {voiceManifest} from './voice-manifest.ts';
+import {narrationManifest} from './narration-manifest.ts';
 
 // ---------------------------------------------------------------------------
 // Базові параметри
@@ -69,7 +70,35 @@ export const TEXT = {
 };
 
 // ---------------------------------------------------------------------------
-// Голос
+// Дикторський текст (озвучення того, що на екрані)
+// ---------------------------------------------------------------------------
+/**
+ * Голос диктора для `npm run narration` (Microsoft Neural TTS через edge-tts).
+ * Українські голоси: 'uk-UA-OstapNeural' (чоловічий), 'uk-UA-PolinaNeural' (жіночий).
+ * Свій запис будь-якої репліки: покладіть файл recordings/<id>.(m4a|mp3|wav|ogg) —
+ * він замінить синтез.
+ */
+export const NARRATOR = {
+  voice: 'uk-UA-OstapNeural',
+  rate: '+0%',
+  pitch: '+0Hz',
+};
+
+/** Репліки. say — що саме вимовляє диктор (можна писати фонетично, напр. «ей-ай»). */
+export const NARRATION_LINES = [
+  {id: 'n1-schos-pochynayetsya', scene: 's1', say: 'Щось починається…'},
+  {id: 'n2-zapusk', scene: 's2', say: 'Запуск!'},
+  {id: 'n3-novyi-kurs', scene: 's3', say: 'Новий курс — «Ей-Ай в освіті».'},
+  {id: 'n4-kurs-dast', scene: 's5', say: 'Курс дасть:'},
+  {id: 'n4-vpevnenist', scene: 's5', say: 'впевненість,'},
+  {id: 'n4-viru', scene: 's5', say: 'віру,'},
+  {id: 'n4-nove-bachennya', scene: 's5', say: 'нове бачення.'},
+  {id: 'n5-start', scene: 's6', say: 'Старт — вісімнадцятого січня. Деталі — в інстаграм.'},
+] as const;
+export type NarrationId = (typeof NARRATION_LINES)[number]['id'];
+
+// ---------------------------------------------------------------------------
+// Ваші власні записи (audio 1 / audio 2) — необов'язкові
 // ---------------------------------------------------------------------------
 export const VOICE = {
   /** Кадр усередині сцени 1, коли починається voice1. */
@@ -81,36 +110,58 @@ export const VOICE = {
 };
 
 const ceilToBeat = (frames: number) => Math.ceil(frames / BEAT) * BEAT;
-const voiceFrames = (clip: {durationSec: number} | null) =>
+const toFrames = (clip: {durationSec: number} | null | undefined) =>
   clip ? Math.ceil(clip.durationSec * FPS) : 0;
 
-export const VOICE1_FRAMES = voiceFrames(voiceManifest.voice1);
-export const VOICE2_FRAMES = voiceFrames(voiceManifest.voice2);
+export const VOICE1_FRAMES = toFrames(voiceManifest.voice1);
+export const VOICE2_FRAMES = toFrames(voiceManifest.voice2);
+/** Тривалість репліки диктора в кадрах (0 — репліки ще немає). */
+export const narrationFrames = (id: NarrationId) => toFrames(narrationManifest[id]);
+const nf = narrationFrames;
 
 // ---------------------------------------------------------------------------
-// Сцени. Тривалість сцен 1 і 6 автоматично подовжується під голос
-// (з округленням до біта, щоб не збити ритм).
+// Таймінги, що залежать від голосу. Текст на екрані з'являється разом зі
+// словом диктора; якщо репліка довша — сцена подовжується (з округленням до
+// біта, щоб не збити ритм), голос ніколи не обрізається.
 // ---------------------------------------------------------------------------
-const S1_BASE = 150; // 5 с
-const S6_FLASH_BASE = 120; // спалах іскри у фіналі (кадр усередині сцени 6)
-const S6_AFTER_FLASH = 60; // від'їзд камери + затемнення після спалаху
+const v1End = VOICE1_FRAMES ? VOICE.voice1StartInScene + VOICE1_FRAMES + 6 : 0;
+const v2End = VOICE2_FRAMES ? VOICE.voice2StartInScene + VOICE2_FRAMES + 6 : 0;
 
+// Сцена 1: «Щось починається…»
+const s1Tagline = Math.max(45, v1End);
 const s1Duration = Math.max(
-  S1_BASE,
+  150,
+  ceilToBeat(s1Tagline + nf('n1-schos-pochynayetsya') + 20),
   ceilToBeat(VOICE.voice1StartInScene + VOICE1_FRAMES + VOICE.tailPad),
 );
-/** Кадр спалаху у фіналі — після закінчення voice2. */
+
+// Сцена 3: «Новий курс — AI в освіті»
+const s3Narration = 40;
+const s3Duration = Math.max(240, ceilToBeat(s3Narration + nf('n3-novyi-kurs') + 40));
+
+// Сцена 5: тези з'являються під слово диктора
+const s5Header = 12;
+const s5T1 = Math.max(30, ceilToBeat(s5Header + nf('n4-kurs-dast') + 2));
+const s5T2 = Math.max(s5T1 + 45, ceilToBeat(s5T1 + nf('n4-vpevnenist') + 2));
+const s5T3 = Math.max(s5T2 + 45, ceilToBeat(s5T2 + nf('n4-viru') + 2));
+const s5Duration = Math.max(s5T3 + 90, ceilToBeat(s5T3 + nf('n4-nove-bachennya') + 45));
+
+// Сцена 6: «Старт — 18 січня» + спалах після останнього слова
+const s6StartText = Math.max(22, v2End);
+const S6_AFTER_FLASH = 60; // від'їзд камери + затемнення після спалаху
+/** Кадр спалаху у фіналі — після закінчення голосу. */
 export const S6_FLASH = Math.max(
-  S6_FLASH_BASE,
+  120,
   ceilToBeat(VOICE.voice2StartInScene + VOICE2_FRAMES + 10),
+  ceilToBeat(s6StartText + nf('n5-start') + 12),
 );
 
 const durations = {
-  s1: s1Duration,
+  s1: s1Duration, // 5 с (або довше під голос)
   s2: 180, // 6 с
-  s3: 240, // 8 с
+  s3: s3Duration, // 8 с
   s4: 240, // 8 с
-  s5: 210, // 7 с
+  s5: s5Duration, // 7 с
   s6: S6_FLASH + S6_AFTER_FLASH, // 6 с (або довше під голос)
 };
 
@@ -138,7 +189,7 @@ export const at = (scene: SceneId, local: number) => SCENES[scene].from + local;
 export const T = {
   s1: {
     sparkIn: 8,
-    taglineIn: 45,
+    taglineIn: s1Tagline,
   },
   s2: {
     slam: 0, // слово з'являється (flash-cut)
@@ -157,7 +208,7 @@ export const T = {
     assembleEnd: 60, // літери стали на місця
     shuffleStart: 75,
     shuffleEnd: 135, // фіксація шрифту
-    whipOut: 228,
+    whipOut: s3Duration - 12,
   },
   s4: {
     whipIn: 0,
@@ -167,14 +218,26 @@ export const T = {
     curtainOut: 212,
   },
   s5: {
-    headerIn: 15,
-    theses: [30, 75, 120], // на біти
+    headerIn: s5Header + 3,
+    theses: [s5T1, s5T2, s5T3], // на біти, під слово диктора
   },
   s6: {
     morphIn: 0,
-    startTextIn: 22,
-    handleIn: 52,
+    startTextIn: s6StartText,
+    handleIn: s6StartText + 30,
   },
+};
+
+/** Коли звучить кожна репліка (сцена + локальний кадр). */
+const NARRATION_AT: Record<NarrationId, number> = {
+  'n1-schos-pochynayetsya': s1Tagline - 4,
+  'n2-zapusk': T.s2.stretchStart + 2,
+  'n3-novyi-kurs': s3Narration,
+  'n4-kurs-dast': s5Header,
+  'n4-vpevnenist': s5T1 - 2,
+  'n4-viru': s5T2 - 2,
+  'n4-nove-bachennya': s5T3 - 2,
+  'n5-start': s6StartText - 4,
 };
 
 // ---------------------------------------------------------------------------
@@ -335,6 +398,13 @@ export const VOICE_CUES = [
     frames: VOICE2_FRAMES,
   },
 ].filter(Boolean) as {file: string; from: number; frames: number}[];
+
+/** Репліки диктора з глобальними кадрами (тільки ті, для яких є файл). */
+export const NARRATION_CUES = NARRATION_LINES.flatMap((l) => {
+  const clip = narrationManifest[l.id];
+  if (!clip) return [];
+  return [{id: l.id, file: clip.file, from: at(l.scene, NARRATION_AT[l.id]), frames: nf(l.id)}];
+});
 
 // ---------------------------------------------------------------------------
 // Flash-cut у ритмі музики (спалахи кадру на біти). strength 0..1

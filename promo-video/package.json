@@ -12,7 +12,8 @@
     "render:landscape": "remotion render Promo out/promo-1920x1080.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac",
     "render:vertical": "remotion render PromoVertical out/promo-1080x1920.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac",
     "audio": "python3 scripts/generate_audio.py",
-    "check-audio": "bash scripts/check_audio.sh"
+    "check-audio": "bash scripts/check_audio.sh",
+    "narration": "python3 scripts/narration.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.536",
