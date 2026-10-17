@@ -67,6 +67,7 @@ export const TEXT = {
   /** Третя теза у вертикальній версії — у два рядки. */
   s5Thesis3Vertical: ['НОВЕ', 'БАЧЕННЯ'],
   s6Handle: '@sasha_dum4k',
+  s6HandleLabel: 'деталі — в Instagram',
 };
 
 // ---------------------------------------------------------------------------
@@ -224,7 +225,9 @@ export const T = {
   s6: {
     morphIn: 0,
     startTextIn: s6StartText,
-    handleIn: s6StartText + 30,
+    // нікнейм з'являється, коли диктор каже «Деталі — в інстаграм»
+    // (≈ 60% фрази n5-start; без запису — через секунду після дати)
+    handleIn: s6StartText + (nf('n5-start') ? Math.round(nf('n5-start') * 0.6) : 30),
   },
 };
 

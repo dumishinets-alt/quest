@@ -4,12 +4,12 @@ import type {NarrationId} from './config.ts';
 export type NarrationClip = {file: string; durationSec: number} | null;
 
 export const narrationManifest: Record<NarrationId, NarrationClip> = {
-  'n1-schos-pochynayetsya': null,
-  'n2-zapusk': null,
-  'n3-novyi-kurs': null,
-  'n4-kurs-dast': null,
-  'n4-vpevnenist': null,
-  'n4-viru': null,
-  'n4-nove-bachennya': null,
-  'n5-start': null,
+  'n1-schos-pochynayetsya': {file: 'voice/narration/n1-schos-pochynayetsya.mp3', durationSec: 1.416},
+  'n2-zapusk': {file: 'voice/narration/n2-zapusk.mp3', durationSec: 1.008},
+  'n3-novyi-kurs': {file: 'voice/narration/n3-novyi-kurs.mp3', durationSec: 2.784},
+  'n4-kurs-dast': {file: 'voice/narration/n4-kurs-dast.mp3', durationSec: 0.816},
+  'n4-vpevnenist': {file: 'voice/narration/n4-vpevnenist.mp3', durationSec: 0.816},
+  'n4-viru': {file: 'voice/narration/n4-viru.mp3', durationSec: 0.624},
+  'n4-nove-bachennya': {file: 'voice/narration/n4-nove-bachennya.mp3', durationSec: 1.488},
+  'n5-start': {file: 'voice/narration/n5-start.mp3', durationSec: 6.144},
 };

@@ -87,7 +87,21 @@ export const Scene6Finale: React.FC = () => {
               ))}
               <div
                 style={{
-                  marginTop: 34 * u,
+                  marginTop: 30 * u,
+                  fontFamily: FONTS.flex,
+                  fontVariationSettings: '"wdth" 110, "wght" 350',
+                  fontSize: (vertical ? 40 : 34) * u,
+                  letterSpacing: '0.08em',
+                  color: COLORS.creamDim,
+                  opacity: handleP,
+                  transform: `translateY(${(1 - handleP) * 14 * u}px)`,
+                }}
+              >
+                {TEXT.s6HandleLabel}
+              </div>
+              <div
+                style={{
+                  marginTop: 8 * u,
                   fontFamily: FONTS.mono,
                   fontWeight: 700,
                   fontSize: handleSize,
