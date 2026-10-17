@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Відкриті дані проти корупції</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Інтерактивний урок для 11 класу: відкриті дані уряду, ProZorro, реєстри та мінірозслідування шкільних закупівель" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="style.css" />
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#start" data-go="start">
+      <span class="brand-mark" aria-hidden="true">{ }</span>
+      <span>Відкриті дані<br><small>проти корупції</small></span>
+    </a>
+    <nav class="tabs" aria-label="Модулі уроку">
+      <a href="#start" data-go="start">Старт</a>
+      <a href="#opendata" data-go="opendata">1. Відкриті дані</a>
+      <a href="#portal" data-go="portal">2. data.gov.ua</a>
+      <a href="#prozorro" data-go="prozorro">3. ProZorro</a>
+      <a href="#registries" data-go="registries">4. Реєстри</a>
+      <a href="#investigation" data-go="investigation">5. Розслідування</a>
+      <a href="#test" data-go="test">Тест</a>
+    </nav>
+    <div class="progress" title="Виконані завдання">
+      <span id="progress-text">0 / 0</span>
+      <span class="progress-bar"><span id="progress-fill"></span></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ====== СТАРТ ====== -->
+  <section id="start" class="module" data-module>
+    <div class="hero">
+      <p class="eyebrow">Інформатика · Громадянська освіта · 11 клас</p>
+      <h1>Гроші школи видно всім. Навчімося їх читати.</h1>
+      <p class="lead">Кожна гривня, витрачена на парти, ноутбуки чи ремонт укриття, залишає слід у відкритих даних. За цей урок ви розберетеся, де ці дані лежать, як їх перевіряти, і проведете власне мінірозслідування закупівель шкіл вигаданого міста Зорянськ.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#opendata" data-go="opendata">Почати урок</a>
+        <a class="btn ghost" href="#investigation" data-go="investigation">Одразу до розслідування</a>
+      </div>
+      <div class="ticker" aria-hidden="true"><span id="ticker-line"></span></div>
+    </div>
+
+    <div class="route">
+      <h2>Маршрут уроку</h2>
+      <ol class="route-list">
+        <li><a href="#opendata" data-go="opendata"><b>Відкриті дані</b><span>Що це, принципи, закон, гра «п'ять зірок»</span></a></li>
+        <li><a href="#portal" data-go="portal"><b>Державний портал</b><span>Пошук наборів і читання метаданих на data.gov.ua</span></a></li>
+        <li><a href="#prozorro" data-go="prozorro"><b>ProZorro</b><span>Як влаштована система, пороги, етапи тендеру, червоні прапорці</span></a></li>
+        <li><a href="#registries" data-go="registries"><b>Реєстри</b><span>ЄДР, декларації НАЗК, нерухомість, YouControl, Opendatabot</span></a></li>
+        <li><a href="#investigation" data-go="investigation"><b>Мінірозслідування</b><span>18 закупівель шкіл, аналітика, звіт</span></a></li>
+        <li><a href="#test" data-go="test"><b>Підсумковий тест</b><span>10 питань для самоперевірки</span></a></li>
+      </ol>
+    </div>
+
+    <details class="teacher">
+      <summary>Для вчителя: план на 2 уроки (2 × 45 хв)</summary>
+      <div class="teacher-body">
+        <table class="plain">
+          <thead><tr><th>Час</th><th>Етап</th><th>Що відбувається</th></tr></thead>
+          <tbody>
+            <tr><td>Урок 1 · 5 хв</td><td>Мотивація</td><td>Питання класу: «Скільки коштує парта в нашій школі і як це дізнатися?»</td></tr>
+            <tr><td>15 хв</td><td>Модуль 1–2</td><td>Принципи відкритих даних, гра «п'ять зірок», пошук на порталі.</td></tr>
+            <tr><td>20 хв</td><td>Модуль 3</td><td>Екосистема ProZorro, калькулятор порогів, етапи тендеру, прапорці.</td></tr>
+            <tr><td>5 хв</td><td>Рефлексія</td><td>Домашнє завдання: знайти на prozorro.gov.ua одну закупівлю своєї школи.</td></tr>
+            <tr><td>Урок 2 · 10 хв</td><td>Модуль 4</td><td>Реєстри та агрегатори, етика розслідувань.</td></tr>
+            <tr><td>25 хв</td><td>Модуль 5</td><td>Робота в парах: 6 завдань розслідування, оформлення звіту.</td></tr>
+            <tr><td>10 хв</td><td>Тест і обговорення</td><td>Підсумковий тест; пари зачитують висновки звітів.</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Усі закупівлі, компанії та особи на сайті вигадані. Для реальної практики використовуйте інструкцію наприкінці модуля 5. Прогрес учня зберігається лише в його браузері.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ====== 1. ВІДКРИТІ ДАНІ ====== -->
+  <section id="opendata" class="module" data-module hidden>
+    <header class="module-head">
+      <p class="eyebrow">Модуль 1</p>
+      <h2>Відкриті дані уряду</h2>
+      <p class="lead">Open Government Data — це інформація, яку створюють органи влади і яку будь-хто може вільно використовувати, повторно поширювати й обробляти програмами.</p>
+    </header>
+
+    <div class="cols">
+      <article class="prose">
+        <h3>Три обов'язкові ознаки</h3>
+        <dl class="defs">
+          <dt>Доступні</dt><dd>Безоплатно, без реєстрації та пояснень, навіщо вам ці дані.</dd>
+          <dt>Машинозчитувані</dt><dd>Програма може їх обробити: CSV, JSON, XML, а не скан у PDF чи фото таблиці.</dd>
+          <dt>З відкритою ліцензією</dt><dd>Можна копіювати, змінювати, навіть використовувати комерційно, вказавши джерело (CC BY 4.0).</dd>
+        </dl>
+        <h3>Чому це зброя проти корупції</h3>
+        <p>Корупція живе там, де рішення ухвалюють непомітно. Коли бюджет, договори, власники компаній і майно посадовців відкриті, журналісти, громадські організації та звичайні громадяни можуть зіставити ці набори й побачити те, що раніше бачили лише учасники схеми.</p>
+        <h3>Правова основа в Україні</h3>
+        <ul class="facts">
+          <li><b>2011</b> Закон «Про доступ до публічної інформації»; у 2015 р. додано ст. 10-1 про відкриті дані.</li>
+          <li><b>2015</b> Постанова КМУ № 835: перелік наборів, які органи влади зобов'язані публікувати.</li>
+          <li><b>2015</b> Закон «Про публічні закупівлі» (з 2016 р. ProZorro обов'язковий для всіх).</li>
+          <li><b>2016</b> Запуск системи е-декларування НАЗК.</li>
+        </ul>
+      </article>
+
+      <aside class="card principles">
+        <h3>Міжнародна хартія відкритих даних</h3>
+        <p class="small">Україна приєдналася до Хартії у 2016 році. Шість принципів:</p>
+        <ol>
+          <li>Відкритість за замовчуванням</li>
+          <li>Своєчасність і повнота</li>
+          <li>Доступність і зручність використання</li>
+          <li>Порівнюваність і сумісність</li>
+          <li>Для кращого врядування та залучення громадян</li>
+          <li>Для інклюзивного розвитку та інновацій</li>
+        </ol>
+      </aside>
+    </div>
+
+    <div class="activity" id="stars-activity">
+      <div class="activity-head">
+        <span class="tag">Завдання 1.1</span>
+        <h3>Гра «П'ять зірок відкритих даних»</h3>
+        <p>Тім Бернерс-Лі, винахідник вебу, запропонував шкалу якості відкритих даних. Оцініть кожен приклад від ★ до ★★★★★.</p>
+      </div>
+      <div id="stars-list" class="stars-list"></div>
+      <div class="activity-foot">
+        <button class="btn primary" id="stars-check">Перевірити</button>
+        <span class="feedback" id="stars-feedback" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 2. ПОРТАЛ ====== -->
+  <section id="portal" class="module" data-module hidden>
+    <header class="module-head">
+      <p class="eyebrow">Модуль 2</p>
+      <h2>Державний портал відкритих даних</h2>
+      <p class="lead"><a href="https://data.gov.ua" target="_blank" rel="noopener">data.gov.ua</a> — єдиний вебпортал, куди органи влади й місцеве самоврядування викладають набори даних. Його адмініструє Міністерство цифрової трансформації. Портал має API, тож дані можна забирати програмно.</p>
+    </header>
+
+    <div class="cols">
+      <article class="prose">
+        <h3>Як читати картку набору даних</h3>
+        <dl class="defs">
+          <dt>Розпорядник</dt><dd>Орган, який відповідає за набір і його оновлення.</dd>
+          <dt>Формат</dt><dd>CSV, JSON, XML — добре; PDF — погано для аналізу.</dd>
+          <dt>Частота оновлення</dt><dd>Застарілі дані можуть ввести в оману.</dd>
+          <dt>Структура</dt><dd>Які поля є в наборі: від цього залежить, що можна дослідити.</dd>
+        </dl>
+        <p class="note">Нижче — навчальна імітація каталогу для громади Зорянськ. Справжній портал виглядає інакше, але логіка пошуку та метадані ті самі.</p>
+      </article>
+
+      <div class="portal" aria-label="Імітація каталогу data.gov.ua">
+        <div class="portal-bar">
+          <span class="portal-url">data.gov.ua / dataset</span>
+        </div>
+        <div class="portal-search">
+          <label class="sr" for="portal-q">Пошук наборів</label>
+          <input id="portal-q" type="search" placeholder="Пошук: школи, закупівлі, бюджет…" value="освіта">
+          <label class="sr" for="portal-format">Формат</label>
+          <select id="portal-format">
+            <option value="">Усі формати</option>
+            <option>CSV</option><option>JSON</option><option>XLSX</option><option>PDF</option><option>GeoJSON</option>
+          </select>
+        </div>
+        <ul id="portal-results" class="portal-results"></ul>
+        <div id="portal-detail" class="portal-detail" hidden></div>
+      </div>
+    </div>
+
+    <div class="activity" id="portal-activity">
+      <div class="activity-head">
+        <span class="tag">Завдання 2.1</span>
+        <h3>Детектив каталогу</h3>
+        <p>Скористайтеся пошуком вище та дайте відповіді.</p>
+      </div>
+      <div id="portal-tasks" class="qa-list"></div>
+    </div>
+  </section>
+
+  <!-- ====== 3. PROZORRO ====== -->
+  <section id="prozorro" class="module" data-module hidden>
+    <header class="module-head">
+      <p class="eyebrow">Модуль 3</p>
+      <h2>ProZorro: закупівлі, які бачать усі</h2>
+      <p class="lead">ProZorro виріс із волонтерського пілоту 2014 року, який створили громадські активісти, бізнес і Transparency International Україна. З 1 серпня 2016 року він обов'язковий для всіх державних і комунальних замовників, а у 2016-му отримав міжнародну премію World Procurement Award. Головний принцип: «усі бачать усе».</p>
+    </header>
+
+    <div class="activity">
+      <div class="activity-head">
+        <span class="tag">Схема</span>
+        <h3>Як ProZorro інтегрований з іншими системами</h3>
+        <p>Натисніть на будь-який елемент екосистеми.</p>
+      </div>
+      <div class="eco">
+        <div class="eco-map" id="eco-map"></div>
+        <div class="eco-info" id="eco-info" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div class="activity">
+        <div class="activity-head">
+          <span class="tag">Інструмент</span>
+          <h3>Калькулятор процедури</h3>
+          <p>Яку процедуру має обрати школа? Пороги за Законом «Про публічні закупівлі» для звичайних замовників.</p>
+        </div>
+        <div class="calc">
+          <label for="calc-type">Предмет закупівлі</label>
+          <select id="calc-type">
+            <option value="goods">Товари (ноутбуки, меблі, продукти)</option>
+            <option value="services">Послуги (харчування, прибирання)</option>
+            <option value="works">Роботи (ремонт, будівництво)</option>
+          </select>
+          <label for="calc-sum">Очікувана вартість, грн</label>
+          <input id="calc-sum" type="number" min="0" step="1000" value="350000">
+          <input id="calc-range" type="range" min="0" max="3000000" step="5000" value="350000" aria-label="Очікувана вартість, повзунок">
+          <div class="calc-result" id="calc-result" aria-live="polite"></div>
+          <p class="note">Під час воєнного стану діють «Особливості» (постанова КМУ № 1178 від 12.10.2022): відкриті торги проводять «з особливостями», а прямі договори дозволені в більшій кількості випадків. Перевіряйте чинну редакцію закону.</p>
+        </div>
+      </div>
+
+      <div class="activity">
+        <div class="activity-head">
+          <span class="tag">Хронологія</span>
+          <h3>Життя одного тендеру</h3>
+          <p>Пройдіть етапи відкритих торгів.</p>
+        </div>
+        <ol class="steps" id="steps"></ol>
+        <div class="step-text" id="step-text" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="activity">
+      <div class="activity-head">
+        <span class="tag">Завдання 3.1</span>
+        <h3>Червоні прапорці закупівель</h3>
+        <p>Червоний прапорець — не доказ корупції, а привід перевірити глибше. Прочитайте картки, потім виконайте завдання.</p>
+      </div>
+      <div class="flags" id="flags"></div>
+      <div id="flag-tasks" class="qa-list"></div>
+    </div>
+  </section>
+
+  <!-- ====== 4. РЕЄСТРИ ====== -->
+  <section id="registries" class="module" data-module hidden>
+    <header class="module-head">
+      <p class="eyebrow">Модуль 4</p>
+      <h2>Реєстри нерухомості, компаній і декларацій</h2>
+      <p class="lead">Закупівля показує, <em>хто</em> отримав гроші. Реєстри відповідають, <em>хто стоїть за компанією</em> і чи не пов'язаний він із посадовцем. Агрегатори YouControl та Opendatabot збирають десятки державних реєстрів в одне досьє за кодом ЄДРПОУ.</p>
+    </header>
+
+    <div class="tools" id="tools"></div>
+
+    <div class="activity">
+      <div class="activity-head">
+        <span class="tag">Завдання 4.1</span>
+        <h3>Який інструмент обрати?</h3>
+        <p>Для кожного питання оберіть найкраще джерело.</p>
+      </div>
+      <div id="tool-match" class="qa-list"></div>
+      <div class="activity-foot">
+        <button class="btn primary" id="tool-check">Перевірити</button>
+        <span class="feedback" id="tool-feedback" role="status"></span>
+      </div>
+    </div>
+
+    <div class="activity">
+      <div class="activity-head">
+        <span class="tag">Тренажер</span>
+        <h3>Пошук у реєстрах (імітація)</h3>
+        <p>Введіть назву компанії, ЄДРПОУ або прізвище. Спробуйте: <button class="chip" data-reg="Мегабуд">Мегабуд</button> <button class="chip" data-reg="Петренко">Петренко</button> <button class="chip" data-reg="Ткач">Ткач</button> <button class="chip" data-reg="ТехноКлас">ТехноКлас</button></p>
+      </div>
+      <div class="reg-search">
+        <label class="sr" for="reg-q">Пошук у реєстрах</label>
+        <input id="reg-q" type="search" placeholder="Назва, код ЄДРПОУ або ПІБ">
+        <div class="seg" role="radiogroup" aria-label="Реєстр">
+          <button data-src="all" aria-pressed="true">Усі</button>
+          <button data-src="edr" aria-pressed="false">ЄДР / агрегатор</button>
+          <button data-src="nazk" aria-pressed="false">Декларації</button>
+          <button data-src="rrp" aria-pressed="false">Нерухомість</button>
+        </div>
+      </div>
+      <div id="reg-results" class="reg-results"></div>
+    </div>
+
+    <div class="ethics">
+      <h3>Етика розслідувача</h3>
+      <ul>
+        <li><b>Презумпція невинуватості.</b> Збіг даних — це питання, а не вирок. Пишіть «виявлено ознаки», а не «вкрали».</li>
+        <li><b>Два джерела.</b> Кожен факт підтверджуйте щонайменше двома незалежними джерелами.</li>
+        <li><b>Персональні дані.</b> Не публікуйте адреси, телефони чи дані дітей. Закон «Про захист персональних даних» діє і для розслідувачів.</li>
+        <li><b>Правильний адресат.</b> Порушення в закупівлях — до DOZORRO і Держаудитслужби, конфлікт інтересів — до НАЗК, ознаки злочину — до Нацполіції чи НАБУ.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ====== 5. РОЗСЛІДУВАННЯ ====== -->
+  <section id="investigation" class="module" data-module hidden>
+    <header class="module-head">
+      <p class="eyebrow">Модуль 5 · Практикум</p>
+      <h2>Мінірозслідування: закупівлі шкіл Зорянська, 2025</h2>
+      <p class="lead">Перед вами вивантаження з модуля аналітики: 18 закупівель управління освіти та шкіл міста. Фільтруйте, сортуйте, відкривайте картки й шукайте закономірності, як аналітики BI ProZorro та DOZORRO.</p>
+    </header>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="board">
+      <div class="board-main">
+        <div class="filters">
+          <label class="sr" for="f-q">Пошук</label>
+          <input id="f-q" type="search" placeholder="Пошук за назвою, переможцем, CPV">
+          <label class="sr" for="f-customer">Замовник</label>
+          <select id="f-customer"><option value="">Усі замовники</option></select>
+          <label class="sr" for="f-proc">Процедура</label>
+          <select id="f-proc">
+            <option value="">Усі процедури</option>
+            <option value="competitive">Конкурентні (торги + спрощені)</option>
+            <option value="open">Відкриті торги</option>
+            <option value="simple">Спрощена закупівля</option>
+            <option value="direct">Прямий договір (звіт)</option>
+            <option value="negotiated">Переговорна процедура</option>
+          </select>
+          <label class="toggle"><input type="checkbox" id="f-flags"> Лише з прапорцями</label>
+          <label class="toggle"><input type="checkbox" id="f-risk"> Показати ризик-індикатори</label>
+        </div>
+        <div class="table-wrap">
+          <table class="data" id="t-table">
+            <thead>
+              <tr>
+                <th data-sort="date">Дата</th>
+                <th data-sort="customer">Замовник</th>
+                <th data-sort="title">Предмет</th>
+                <th data-sort="procedure">Процедура</th>
+                <th data-sort="bidders" class="num">Учасн.</th>
+                <th data-sort="winner">Переможець</th>
+                <th data-sort="final" class="num">Сума, грн</th>
+              </tr>
+            </thead>
+            <tbody id="t-body"></tbody>
+          </table>
+        </div>
+        <p class="small" id="t-count"></p>
+      </div>
+
+      <aside class="board-side">
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Хто отримав гроші</h3>
+            <div class="seg small-seg" role="radiogroup" aria-label="Групування">
+              <button data-group="winner" aria-pressed="true">Постачальники</button>
+              <button data-group="customer" aria-pressed="false">Замовники</button>
+            </div>
+          </div>
+          <div id="chart" class="chart"></div>
+        </div>
+        <div id="t-detail" class="t-detail">
+          <p class="empty">Оберіть рядок у таблиці, щоб відкрити картку закупівлі.</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="activity">
+      <div class="activity-head">
+        <span class="tag">Завдання 5.1–5.6</span>
+        <h3>Питання слідства</h3>
+        <p>Відповіді перевіряються автоматично. Якщо застрягли, відкрийте підказку.</p>
+      </div>
+      <div id="inv-tasks" class="qa-list"></div>
+    </div>
+
+    <div class="activity report">
+      <div class="activity-head">
+        <span class="tag">Завдання 5.7</span>
+        <h3>Звіт розслідування</h3>
+        <p>Позначте виявлені ознаки, сформулюйте висновок і рекомендацію. Звіт можна скопіювати й надіслати вчителю.</p>
+      </div>
+      <div class="report-grid">
+        <div>
+          <label for="rep-team">Автори</label>
+          <input id="rep-team" type="text" placeholder="Прізвища учнів, клас">
+          <fieldset id="rep-flags">
+            <legend>Виявлені ознаки</legend>
+          </fieldset>
+          <label for="rep-text">Висновок</label>
+          <textarea id="rep-text" rows="5" placeholder="Наприклад: У закупівлях ремонту санвузлів Ліцею № 11 виявлено ознаки дроблення…"></textarea>
+          <label for="rep-to">Куди звернутися</label>
+          <select id="rep-to">
+            <option>DOZORRO — відгук і запит на моніторинг</option>
+            <option>Державна аудиторська служба — моніторинг закупівлі</option>
+            <option>НАЗК — повідомлення про конфлікт інтересів</option>
+            <option>Депутатам міської ради — депутатський запит</option>
+            <option>Місцевим журналістам</option>
+          </select>
+        </div>
+        <div class="report-preview">
+          <pre id="rep-preview"></pre>
+          <div class="activity-foot">
+            <button class="btn primary" id="rep-copy">Скопіювати звіт</button>
+            <span class="feedback" id="rep-feedback" role="status"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <details class="realworld" open>
+      <summary>Як повторити розслідування на справжніх даних</summary>
+      <ol class="howto">
+        <li><b>Знайдіть код ЄДРПОУ своєї школи.</b> Він є на сайті закладу, у ЄДР або в наборі «Перелік закладів освіти» на data.gov.ua.</li>
+        <li><b>Пошук на <a href="https://prozorro.gov.ua" target="_blank" rel="noopener">prozorro.gov.ua</a>.</b> Введіть код ЄДРПОУ у пошук закупівель, оберіть статус «Завершена», відсортуйте за сумою.</li>
+        <li><b>Аналітика в <a href="https://bi.prozorro.org" target="_blank" rel="noopener">BI ProZorro</a>.</b> У публічних дашбордах оберіть свій регіон і замовників-освітян, подивіться частку тендерів з одним учасником і топ постачальників.</li>
+        <li><b>Порівняйте ціни.</b> Знайдіть за CPV-кодом (наприклад, 30213100-6 — ноутбуки) закупівлі інших шкіл і порахуйте ціну за одиницю.</li>
+        <li><b>Перевірте прапорці на <a href="https://dozorro.org" target="_blank" rel="noopener">DOZORRO</a>.</b> Там автоматичні ризик-індикатори для кожного тендеру.</li>
+        <li><b>Перевірте переможця.</b> Код ЄДРПОУ постачальника — в <a href="https://opendatabot.ua" target="_blank" rel="noopener">Opendatabot</a> або <a href="https://youcontrol.com.ua" target="_blank" rel="noopener">YouControl</a>: дата реєстрації, власники, суди.</li>
+        <li><b>Чи заплатили?</b> Транзакції замовника — на <a href="https://spending.gov.ua" target="_blank" rel="noopener">spending.gov.ua</a>.</li>
+        <li><b>Оформіть висновки обережно.</b> Факти, джерела, питання до замовника. Можна надіслати запит на інформацію — відповідь має надійти протягом 5 робочих днів.</li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- ====== ТЕСТ ====== -->
+  <section id="test" class="module" data-module hidden>
+    <header class="module-head">
+      <p class="eyebrow">Підсумок</p>
+      <h2>Тест: 10 питань</h2>
+      <p class="lead">Оберіть по одній відповіді в кожному питанні та натисніть «Завершити тест».</p>
+    </header>
+    <form id="quiz" class="quiz"></form>
+    <div class="activity-foot">
+      <button class="btn primary" id="quiz-submit" type="button">Завершити тест</button>
+      <button class="btn ghost" id="quiz-reset" type="button">Пройти ще раз</button>
+      <span class="feedback" id="quiz-feedback" role="status"></span>
+    </div>
+    <div class="final" id="final" hidden></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Навчальний ресурс для 11 класу. Місто Зорянськ, усі закупівлі, компанії та особи вигадані; будь-які збіги випадкові.</p>
+  <button class="btn ghost small-btn" id="reset-all" type="button">Скинути прогрес</button>
+  <span class="feedback" id="reset-feedback" role="status"></span>
+</footer>
+</body>
+</html>
