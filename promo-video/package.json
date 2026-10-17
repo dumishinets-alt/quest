@@ -5,11 +5,14 @@
   "description": "Kinetic typography promo: AI в освіті — запуск курсу",
   "scripts": {
     "studio": "remotion studio",
-    "sfx": "python3 scripts/generate_audio.py",
     "voice": "bash scripts/prepare_voice.sh",
     "still": "bash scripts/stills.sh",
-    "render": "remotion render Promo out/promo-1920x1080.mp4 --codec=h264 && remotion render PromoVertical out/promo-1080x1920.mp4 --codec=h264",
-    "typecheck": "tsc --noEmit"
+    "render": "npm run render:landscape && npm run render:vertical && bash scripts/check_audio.sh",
+    "typecheck": "tsc --noEmit",
+    "render:landscape": "remotion render Promo out/promo-1920x1080.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac",
+    "render:vertical": "remotion render PromoVertical out/promo-1080x1920.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac",
+    "audio": "python3 scripts/generate_audio.py",
+    "check-audio": "bash scripts/check_audio.sh"
   },
   "dependencies": {
     "@remotion/cli": "4.0.536",

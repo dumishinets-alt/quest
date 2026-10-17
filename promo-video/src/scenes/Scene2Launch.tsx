@@ -19,7 +19,7 @@ const P_INDEX = [...WORD].indexOf('П');
  * Використовується і камерою сцени 2, і порталом, крізь який видно сцену 3.
  */
 const wordGeometry = (l: Layout) => {
-  const fullWidth = l.width * (l.vertical ? 0.94 : 0.92);
+  const fullWidth = l.width * (l.vertical ? 0.86 : 0.92);
   const axes = flexAxes(151, 1000);
   const w100 = measureText(WORD, {fontFamily: FONTS.flex, fontSize: 100, fontVariationSettings: axes});
   const fontSize = (fullWidth / w100) * 100;

@@ -34,7 +34,7 @@ export const Scene1Spark: React.FC = () => {
     fontFamily: FONTS.flex,
     fontVariationSettings: flexAxes(60 + 50 * tagP, 200 + 150 * tagP),
   };
-  const tagSize = fitFontSize(TEXT.s1Tagline, {...tagStyle, fontVariationSettings: flexAxes(110, 350)}, width * 0.84, 92 * u);
+  const tagSize = fitFontSize(TEXT.s1Tagline, {...tagStyle, fontVariationSettings: flexAxes(110, 350)}, width * (vertical ? 0.62 : 0.6), 92 * u);
 
   const darkness = ease(frame, [0, 24], [1, 0], EASE.out);
 

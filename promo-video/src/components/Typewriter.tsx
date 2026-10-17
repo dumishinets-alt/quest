@@ -21,7 +21,7 @@ export const Typewriter: React.FC<{
   const blinkOn = typing || Math.floor(frame / 8) % 2 === 0;
   const showCursor = frame < hideCursorAfter && blinkOn;
   return (
-    <span style={{whiteSpace: 'pre', ...style}}>
+    <span style={{whiteSpace: 'inherit', ...style}}>
       {typed}
       <span style={{color: cursorColor, opacity: showCursor ? 1 : 0}}>{cursorChar}</span>
     </span>

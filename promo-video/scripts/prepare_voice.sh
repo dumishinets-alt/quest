@@ -4,7 +4,7 @@
 #   npm run voice -- "/шлях/audio 1.m4a" "/шлях/audio 2.m4a"
 #
 # Що робить: копіює в public/voice/ як voice1.mp3 і voice2.mp3, обрізає тишу
-# на початку й у кінці, вирівнює гучність (EBU R128, -16 LUFS, true peak -1.5 dB),
+# на початку й у кінці, вирівнює гучність (EBU R128, -14 LUFS, true peak -2 dB),
 # записує тривалості в src/voice-manifest.ts (сцени 1 і 6 подовжуються під голос)
 # і перегенеровує синтезовану музику під новий таймлайн.
 set -euo pipefail
@@ -30,7 +30,7 @@ process() {
   local in="$1" out="$2"
   # тиша: поріг -45 dB; обрізаємо спереду, перевертаємо, обрізаємо «спереду» (тобто кінець), перевертаємо назад
   ffmpeg -y -loglevel error -i "$in" -vn -ac 1 -ar 48000 \
-    -af "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.08,areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.12,areverse,loudnorm=I=-16:TP=-1.5:LRA=11,afade=t=in:d=0.02,areverse,afade=t=in:d=0.04,areverse" \
+    -af "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.08,areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.12,areverse,loudnorm=I=-14:TP=-2:LRA=9,afade=t=in:d=0.02,areverse,afade=t=in:d=0.04,areverse" \
     -ar 48000 -b:a 192k "$out"
   ffprobe -v error -show_entries format=duration -of csv=p=0 "$out"
 }

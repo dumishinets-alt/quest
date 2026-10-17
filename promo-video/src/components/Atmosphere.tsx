@@ -104,11 +104,15 @@ export const GlowBlobs: React.FC<{intensity?: number}> = ({intensity = 1}) => {
 };
 
 /** Перспективна сітка «підлоги» — добре показує наїзди та dolly-zoom. */
-export const GridFloor: React.FC<{opacity?: number; offset?: number}> = ({opacity = 0.18, offset = 0}) => {
+export const GridFloor: React.FC<{opacity?: number; offset?: number; perspective?: number}> = ({
+  opacity = 0.18,
+  offset = 0,
+  perspective = 900,
+}) => {
   const {width, height} = useLayout();
   const size = Math.max(width, height) * 2.4;
   return (
-    <AbsoluteFill style={{perspective: 900, pointerEvents: 'none', overflow: 'hidden'}}>
+    <AbsoluteFill style={{perspective, pointerEvents: 'none', overflow: 'hidden'}}>
       <div
         style={{
           position: 'absolute',
