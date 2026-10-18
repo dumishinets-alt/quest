@@ -61,9 +61,9 @@ export const TEXT = {
   s4Keywords: ['промпти', 'агенти', 'автоматизація'],
   s5Header: 'Курс дасть:',
   s5Theses: ['ВПЕВНЕНІСТЬ', 'ВІРУ', 'НОВЕ БАЧЕННЯ'],
-  s6Start: 'Старт — 18 січня',
+  s6Start: 'Старт — 18 грудня',
   /** Рядки фінального тексту для вертикальної версії. */
-  s6StartVertical: ['Старт —', '18 січня'],
+  s6StartVertical: ['Старт —', '18 грудня'],
   /** Третя теза у вертикальній версії — у два рядки. */
   s5Thesis3Vertical: ['НОВЕ', 'БАЧЕННЯ'],
   s6Handle: '@sasha_dum4k',
@@ -94,7 +94,7 @@ export const NARRATION_LINES = [
   {id: 'n4-vpevnenist', scene: 's5', say: 'впевненість,'},
   {id: 'n4-viru', scene: 's5', say: 'віру,'},
   {id: 'n4-nove-bachennya', scene: 's5', say: 'нове бачення.'},
-  {id: 'n5-start', scene: 's6', say: 'Старт — вісімнадцятого січня. Деталі — в інстаграм.'},
+  {id: 'n5-start', scene: 's6', say: 'Старт — вісімнадцятого грудня. Деталі — в інстаграм.'},
 ] as const;
 export type NarrationId = (typeof NARRATION_LINES)[number]['id'];
 
@@ -147,8 +147,10 @@ const s5T2 = Math.max(s5T1 + 45, ceilToBeat(s5T1 + nf('n4-vpevnenist') + 2));
 const s5T3 = Math.max(s5T2 + 45, ceilToBeat(s5T2 + nf('n4-viru') + 2));
 const s5Duration = Math.max(s5T3 + 90, ceilToBeat(s5T3 + nf('n4-nove-bachennya') + 45));
 
-// Сцена 6: «Старт — 18 січня» + спалах після останнього слова
+// Сцена 6: «Старт — 18 грудня» + спалах після останнього слова
 const s6StartText = Math.max(22, v2End);
+/** На якій частці фрази n5-start звучить «Деталі — в інстаграм» (для появи нікнейма). */
+const HANDLE_AT_FRACTION = 0.33;
 const S6_AFTER_FLASH = 60; // від'їзд камери + затемнення після спалаху
 /** Кадр спалаху у фіналі — після закінчення голосу. */
 export const S6_FLASH = Math.max(
@@ -226,8 +228,8 @@ export const T = {
     morphIn: 0,
     startTextIn: s6StartText,
     // нікнейм з'являється, коли диктор каже «Деталі — в інстаграм»
-    // (≈ 60% фрази n5-start; без запису — через секунду після дати)
-    handleIn: s6StartText + (nf('n5-start') ? Math.round(nf('n5-start') * 0.6) : 30),
+    // (частка фрази n5-start — HANDLE_AT_FRACTION; без запису — через секунду після дати)
+    handleIn: s6StartText + (nf('n5-start') ? Math.round(nf('n5-start') * HANDLE_AT_FRACTION) : 30),
   },
 };
 

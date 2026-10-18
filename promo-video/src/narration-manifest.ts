@@ -11,5 +11,5 @@ export const narrationManifest: Record<NarrationId, NarrationClip> = {
   'n4-vpevnenist': {file: 'voice/narration/n4-vpevnenist.mp3', durationSec: 0.816},
   'n4-viru': {file: 'voice/narration/n4-viru.mp3', durationSec: 0.624},
   'n4-nove-bachennya': {file: 'voice/narration/n4-nove-bachennya.mp3', durationSec: 1.488},
-  'n5-start': {file: 'voice/narration/n5-start.mp3', durationSec: 6.144},
+  'n5-start': {file: 'voice/narration/n5-start.mp3', durationSec: 3.552},
 };

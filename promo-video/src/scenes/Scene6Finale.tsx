@@ -12,7 +12,7 @@ import {ease, EASE, fitFontSize, useLayout} from '../utils.ts';
 export const sparkOffsetY = (l: {vertical: boolean; u: number}) => (l.vertical ? -380 : -215) * l.u;
 
 /**
- * Сцена 6: «Старт — 18 січня», «@sasha_dum4k». Звучить voice2.
+ * Сцена 6: «Старт — 18 грудня», «@sasha_dum4k». Звучить voice2.
  * Іскра спалахує → камера різко від'їжджає → затемнення.
  */
 export const Scene6Finale: React.FC = () => {
