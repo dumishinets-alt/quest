@@ -721,7 +721,7 @@ function coverRect(vw, vh) {
   if (r > ar) { const sw = vh * ar; return [(vw - sw) / 2, 0, sw, vh]; }
   const sh = vw / ar; return [0, (vh - sh) / 2, vw, sh];
 }
-const activeVideo = () => S.video.els.length ? S.video.els[Math.max(0, S.curSeg) % 2] : null;
+const activeVideo = () => S.frameSrc || (S.video.els.length ? S.video.els[Math.max(0, S.curSeg) % 2] : null);
 
 async function loadVideo(file) {
   pause();
@@ -791,12 +791,12 @@ async function initSegmenter() {
     const opts = d => ({ baseOptions:{ modelAssetPath:MODEL_URL, delegate:d }, runningMode:'VIDEO', outputCategoryMask:false, outputConfidenceMasks:true });
     try { segmenter = await vision.ImageSegmenter.createFromOptions(fileset, opts('GPU')); }
     catch (e) { segmenter = await vision.ImageSegmenter.createFromOptions(fileset, opts('CPU')); }
-    setStat('stSeg', 'модель готова ✓', true);
+    setStat('stSeg', 'модель готова ✓', true); S.segState = 'ready';
     S.needSeg = true;
   } catch (e) {
     console.warn('MediaPipe failed', e);
     segmenter = null; S.maskOK = false;
-    setStat('stSeg', 'недоступно · текст поверх', false);
+    setStat('stSeg', 'недоступно · текст поверх', false); S.segState = 'failed';
   }
 }
 function ensureMask(w, h) {
@@ -893,7 +893,7 @@ function drawBehind(ctx, it, t, cam) {
   if (alpha <= 0.003) return;
   const size = L.size, ls = lerp(0.24, 0.02, e) * size + po * 0.05 * size, blur = lerp(16, 0, e) + po * 8;
   const lh = size * 0.94, n = L.lines.length;
-  const cy = clamp(S.headTop + 250, SAFE.top + size * 0.5 + (n - 1) * lh * 0.5, 980);
+  const cy = clamp(S.headTop + 130, SAFE.top + size * 0.5 + (n - 1) * lh * 0.5, 980);
   const drift = (0.5 - lt / d) * 34 * (it.gold ? -1 : 1);
   ctx.save();
   applyCam(ctx, cam, 0.55, -0.8); // паралакс: ближче до «фону», дрейф протилежно до камери
@@ -901,6 +901,7 @@ function drawBehind(ctx, it, t, cam) {
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : 'none';
   ctx.fillStyle = it.gold ? C.gold : C.cream;
+  ctx.shadowColor = 'rgba(20,16,12,0.35)'; ctx.shadowBlur = 40; // читабельність на світлому фоні
   L.lines.forEach((ln, k) => ctx.fillText(ln, W / 2 + drift + ls / 2, cy + (k - (n - 1) / 2) * lh));
   ctx.restore();
 }
@@ -912,7 +913,7 @@ function buildScene(t) {
   sctx.save(); applyCam(sctx, cam); sctx.drawImage(gradeC, 0, 0); sctx.restore();
   let any = false;
   if (S.tog.behind) for (const it of S.items) if (it.kind === 'behind' && it.on && t >= it.start && t <= it.start + it.dur) { drawBehind(sctx, it, t, cam); any = true; }
-  if (any && S.maskOK && S.maskC && S.video.els.length) {
+  if (any && S.maskOK && S.maskC && activeVideo()) {
     pctx.globalCompositeOperation = 'source-over'; pctx.clearRect(0, 0, W, H); pctx.drawImage(gradeC, 0, 0);
     pctx.globalCompositeOperation = 'destination-in'; pctx.filter = 'blur(2.5px)'; // feather країв
     pctx.drawImage(S.maskC, 0, 0, W, H);
@@ -1540,7 +1541,7 @@ function finishRender() {
 /* =================== Головний цикл =================== */
 function loop() {
   requestAnimationFrame(loop);
-  if (!S.script) return;
+  if (!S.script || S.offline) return;
   if (S.playing) {
     S.t = curTime();
     if (S.t >= S.T) { S.t = S.T; if (S.rendering) finishRender(); else pause(); }
@@ -1731,6 +1732,47 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('resize', () => { fitFrame(); if (S.script) positionTL(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && S.rendering) $('#renderMsg').textContent = 'Увага: вкладка неактивна — рендер може пошкодитися.'; });
+
+/* ---------- Покадровий офлайн-рендер (для автоматизації, без MediaRecorder) ---------- */
+window.__studio = {
+  async setup({ audioUrl, duration }) {
+    S.offline = true; pause();
+    S.srcAudio = await ac.decodeAudioData(await (await fetch(audioUrl)).arrayBuffer()); S.voiceMode = 'buffer';
+    S.video.dur = duration; $('#ph').style.display = 'none';
+    rebuild(); await S.audioPromise;
+    return { T:S.T, frames:Math.round(S.T * FPS), seg:S.segState || 'loading' };
+  },
+  segState: () => S.segState || 'loading',
+  dbg: () => ({ maskOK:S.maskOK, invert:S.invert, votes:S.invVotes, w:S.maskW, h:S.maskH, headTop:S.headTop, mask:S.maskC ? S.maskC.toDataURL() : null }),
+  map: t => outToSrc(Math.min(t, S.cardStart - 1e-3)),
+  async frame(t, url) {
+    const { i } = outToSrc(Math.min(t, S.cardStart - 1e-3));
+    if (url) {
+      const img = new Image(); img.src = url; await img.decode();
+      Object.assign(img, { videoWidth:img.naturalWidth, videoHeight:img.naturalHeight, readyState:4 });
+      S.frameSrc = img;
+    }
+    if (i !== S.curSeg) { S.curSeg = i; S.maskReset = true; }
+    S.t = t;
+    if (segmenter && S.tog.behind && t < S.cardStart && S.frameSrc) { try { runSeg(S.frameSrc); } catch (e) { console.warn(e); } }
+    render(t);
+    return cv.toDataURL('image/jpeg', 0.95);
+  },
+  async mix() {
+    const sr = ac.sampleRate, len = Math.ceil(S.T * sr), off = new OfflineAudioContext(2, len, sr);
+    const lim = off.createDynamicsCompressor(); lim.threshold.value = -1.5; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.12;
+    lim.connect(off.destination);
+    const lv = { voice:LVL.voice, music:S.tog.music ? (S.musicSrc ? LVL.userMusic : LVL.music) : 0, sfx:S.tog.sfx ? LVL.sfx : 0 };
+    for (const k of ['voice', 'music', 'sfx']) { const b = S.bufs[k]; if (!b) continue; const s = off.createBufferSource(); s.buffer = b; const g = off.createGain(); g.gain.value = lv[k]; s.connect(g); g.connect(lim); s.start(0); }
+    const out = await off.startRendering(), n = out.length, wav = new DataView(new ArrayBuffer(44 + n * 4));
+    const str = (o, x) => [...x].forEach((c, k) => wav.setUint8(o + k, c.charCodeAt(0)));
+    str(0, 'RIFF'); wav.setUint32(4, 36 + n * 4, true); str(8, 'WAVEfmt '); wav.setUint32(16, 16, true); wav.setUint16(20, 1, true); wav.setUint16(22, 2, true);
+    wav.setUint32(24, sr, true); wav.setUint32(28, sr * 4, true); wav.setUint16(32, 4, true); wav.setUint16(34, 16, true); str(36, 'data'); wav.setUint32(40, n * 4, true);
+    const L = out.getChannelData(0), R = out.getChannelData(1);
+    for (let i = 0; i < n; i++) { wav.setInt16(44 + i * 4, clamp(L[i], -1, 1) * 32767, true); wav.setInt16(46 + i * 4, clamp(R[i], -1, 1) * 32767, true); }
+    return new Blob([wav.buffer], { type:'audio/wav' });
+  },
+};
 
 /* ---------- Старт ---------- */
 (async () => {
